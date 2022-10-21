@@ -50,7 +50,6 @@ void Mesh::ComputeVertexNormal()
 			vertexNormal += neighborNormal[i][j];
 		}
 
-		vertexNormal /= neighborNormal[i].size();
 		vertexNormal.Normalize();
 
 		vertices[i].Normal = vertexNormal;
@@ -58,9 +57,15 @@ void Mesh::ComputeVertexNormal()
 }
 
 
-void Mesh::CreateMesh()
+void Mesh::CreateMesh(std::string meshName)
 {
-	char* meshFilePath = "../mesh-data/bunny.off";
+	std::string file = "../mesh-data/";
+	file += meshName;
+	std::cout << file << std::endl;
+
+	//char* meshFilePath = "../mesh-data/bunny.off";
+	char* meshFilePath = new char[sizeof(file)];
+	strcpy(meshFilePath, file.c_str());
 	char* meshFileData = textFileRead(meshFilePath);
 
 	if (meshFileData == NULL)
@@ -92,26 +97,29 @@ void Mesh::CreateMesh()
 		vertices.push_back(vertex);
 	}
 
-
-	//indices = new unsigned int[numFaces * 3];
-
-	int aa = 0;
 	for (int i = 0; i < numFaces; i++)
 	{
 		std::vector<std::string> vertexIndex = split(result[2 + numVertices + i], ' ');
 
-		//std::cout << vertexIndex[1] << ' ' << vertexIndex[2] << ' ' << vertexIndex[3] << std::endl;
-
 		VertexIndex face = VertexIndex(stoul(vertexIndex[1]), stoul(vertexIndex[2]), stoul(vertexIndex[3]));
 		faces.push_back(face);
 
-		if (vertexIndex[1] == "0" || vertexIndex[2] == "0" || vertexIndex[3] == "0")
-		{
-			aa++;
-		}
+		Vector3 v0 = vertices[face.vertex0].position;
+		Vector3 v1 = vertices[face.vertex1].position;
+		Vector3 v2 = vertices[face.vertex2].position;
+
+		Vector3 va = v1 - v0;
+		Vector3 vb = v2 - v0;
+
+		Vector3 vc = va.CrossProduct(vb);
+		vc.Normalize();
+
+		neighborNormal[face.vertex0].push_back(vc);
+		neighborNormal[face.vertex1].push_back(vc);
+		neighborNormal[face.vertex2].push_back(vc);
 	}
 
-	SaveFaceNormal();
+	//SaveFaceNormal();
 	ComputeVertexNormal();
 
 	glGenVertexArrays(1, &VAO);
@@ -132,5 +140,7 @@ void Mesh::CreateMesh()
 	// vertex normals
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
 	glBindVertexArray(0);
 }
+

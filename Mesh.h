@@ -26,7 +26,7 @@ public:
 	GLuint VBO;
 	GLuint EBO;
 
-	void CreateMesh();
+	void CreateMesh(std::string meshName);
 	std::vector<std::string> split(std::string str, char Delimiter);
 
 	void SaveFaceNormal();

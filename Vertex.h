@@ -8,6 +8,4 @@ class Vertex
 public:
 	Vector3 position;
 	Vector3 Normal;
-
-
 };
