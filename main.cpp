@@ -29,10 +29,15 @@ Mesh mesh;
 // Light position
 float lpos[2][4] = { {-1.0f,1.0f,3.0f,0.0f},
 					 {1.0f,1.0f,3.0f,0.0f} };
-GLfloat AmbientLightValue[] = { 0.5f, 0.3f, 0.5f, 1.0f };
-GLfloat DiffuseLightValue[] = { 0.5f, 0.3f, 0.5f, 1.0f };
-GLfloat SpecularLightValue[] = { 0.5f, 0.3f, 0.5f, 1.0f };
+//GLfloat AmbientLightValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+//GLfloat DiffuseLightValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+//GLfloat SpecularLightValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+float greenOffset = 0.2f;
 float currentAlpha = 1.0f;
+float currentAmbient[] = { 0.5f, greenOffset, 0.5f, 1.0f };
+float currentDiffuse[] = { 0.5f, greenOffset, 0.5f, 1.0f };
+float currentSpecular[] = { 0.5f, greenOffset, 0.5f, 1.0f };
 
 float cameraSpeed = 0.05f;
 GLdouble cameraPos[] = { 0.0, 0.0, 1.0 };
@@ -61,7 +66,7 @@ void reshape(int w, int h)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45, (float)width / height, 0.1, 500);
+	gluPerspective(60, (float)width / height, 0.1, 500);
 
 	// 모델뷰 매트릭스 초기화
 	glMatrixMode(GL_MODELVIEW);
@@ -74,153 +79,152 @@ void keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case '3':
-		if (DiffuseLightValue[0] >= 1.0f)
+		if (currentDiffuse[0] >= 1.0f)
 		{
 			std::cout << "Current diffuse light is maximum" << std::endl;
 			break;
 		}
 
-		DiffuseLightValue[0] += 0.1f;
-		DiffuseLightValue[1] += 0.1f;
-		DiffuseLightValue[2] += 0.1f;
+		currentDiffuse[0] += 0.1f;
+		currentDiffuse[1] += 0.1f;
+		currentDiffuse[2] += 0.1f;
 
-		if (DiffuseLightValue[0] > 1.0f)
+		if (currentDiffuse[0] > 1.0f)
 		{
-			DiffuseLightValue[0] = 1.0f;
-			DiffuseLightValue[1] = 0.8f;
-			DiffuseLightValue[2] = 1.0f;
+			currentDiffuse[0] = 1.0f;
+			currentDiffuse[1] = 0.5f + greenOffset;
+			currentDiffuse[2] = 1.0f;
 		}
 
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
 
-		std::cout << "Increase diffuse light, (current diffuse light: " << DiffuseLightValue[0] << ", " << DiffuseLightValue[1] << ", " << DiffuseLightValue[2] << ")" << std::endl;
+		std::cout << "Increase diffuse light, (current diffuse light: " << currentDiffuse[0] << ", " << currentDiffuse[1] << ", " << currentDiffuse[2] << ")" << std::endl;
 
 		break;
 
 	case '1':
-		if (DiffuseLightValue[1] <= 0.0f)
+		if (currentDiffuse[1] <= 0.0f)
 		{
 			std::cout << "Current diffuse light is minimum" << std::endl;
 			break;
 		}
 
-		DiffuseLightValue[0] -= 0.1f;
-		DiffuseLightValue[1] -= 0.1f;
-		DiffuseLightValue[2] -= 0.1f;
+		currentDiffuse[0] -= 0.1f;
+		currentDiffuse[1] -= 0.1f;
+		currentDiffuse[2] -= 0.1f;
 
 
-		if (DiffuseLightValue[1] < 0.01f)
+		if (currentDiffuse[1] < 0.01f)
 		{
-			DiffuseLightValue[0] = 0.2f;
-			DiffuseLightValue[1] = 0.0f;
-			DiffuseLightValue[2] = 0.2f;
+			currentDiffuse[0] = 0.5f - greenOffset;
+			currentDiffuse[1] = 0.0f;
+			currentDiffuse[2] = 0.5f - greenOffset;
 		}
 
-		std::cout << "Decrease diffuse light, (current diffuse light: " << DiffuseLightValue[0] << ", " << DiffuseLightValue[1] << ", " << DiffuseLightValue[2] << ")" << std::endl;
+		std::cout << "Decrease diffuse light, (current diffuse light: " << currentDiffuse[0] << ", " << currentDiffuse[1] << ", " << currentDiffuse[2] << ")" << std::endl;
 
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
 
 		break;
 
 	case '6':
-		if (AmbientLightValue[0] >= 1.0f)
+		if (currentAmbient[0] >= 1.0f)
 		{
 			std::cout << "Current ambient light is maximum" << std::endl;
 			break;
 		}
 
-		AmbientLightValue[0] += 0.1f;
-		AmbientLightValue[1] += 0.1f;
-		AmbientLightValue[2] += 0.1f;
+		currentAmbient[0] += 0.1f;
+		currentAmbient[1] += 0.1f;
+		currentAmbient[2] += 0.1f;
 
-		if (AmbientLightValue[0] > 1.0f)
+		if (currentAmbient[0] > 1.0f)
 		{
-			AmbientLightValue[0] = 1.0f;
-			AmbientLightValue[1] = 0.8f;
-			AmbientLightValue[2] = 1.0f;
+			currentAmbient[0] = 1.0f;
+			currentAmbient[1] = 0.5f + greenOffset;
+			currentAmbient[2] = 1.0f;
 		}
 
-		glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
 
-		std::cout << "Increase ambient light, (current diffuse light: " << AmbientLightValue[0] << ", " << AmbientLightValue[1] << ", " << AmbientLightValue[2] << ")" << std::endl;
+		std::cout << "Increase ambient light, (current diffuse light: " << currentAmbient[0] << ", " << currentAmbient[1] << ", " << currentAmbient[2] << ")" << std::endl;
 
 		break;
 
 	case '4':
-		if (AmbientLightValue[1] <= 0.0f)
+		if (currentAmbient[1] <= 0.0f)
 		{
 			std::cout << "Current ambient light is minimum" << std::endl;
 			break;
 		}
 
-		AmbientLightValue[0] -= 0.1f;
-		AmbientLightValue[1] -= 0.1f;
-		AmbientLightValue[2] -= 0.1f;
+		currentAmbient[0] -= 0.1f;
+		currentAmbient[1] -= 0.1f;
+		currentAmbient[2] -= 0.1f;
 
-		if (AmbientLightValue[1] < 0.01f)
+		if (currentAmbient[1] < 0.01f)
 		{
-			AmbientLightValue[0] = 0.2f;
-			AmbientLightValue[1] = 0.0f;
-			AmbientLightValue[2] = 0.2f;
+			currentAmbient[0] = 0.5f - greenOffset;
+			currentAmbient[1] = 0.0f;
+			currentAmbient[2] = 0.5f - greenOffset;
 		}
 
-		glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
 
-		std::cout << "Decrease ambient light, (current diffuse light: " << AmbientLightValue[0] << ", " << AmbientLightValue[1] << ", " << AmbientLightValue[2] << ")" << std::endl;
+		std::cout << "Decrease ambient light, (current diffuse light: " << currentAmbient[0] << ", " << currentAmbient[1] << ", " << currentAmbient[2] << ")" << std::endl;
 
 		break;
 
 	case '9':
-		if (SpecularLightValue[0] >= 1.0f)
+		if (currentSpecular[0] >= 1.0f)
 		{
 			std::cout << "Current specular light is maximum" << std::endl;
 			break;
 		}
 
-		SpecularLightValue[0] += 0.1f;
-		SpecularLightValue[1] += 0.1f;
-		SpecularLightValue[2] += 0.1f;
+		currentSpecular[0] += 0.1f;
+		currentSpecular[1] += 0.1f;
+		currentSpecular[2] += 0.1f;
 
-		if (SpecularLightValue[0] > 1.0f)
+		if (currentSpecular[0] > 1.0f)
 		{
-			SpecularLightValue[0] = 1.0f;
-			SpecularLightValue[1] = 0.8f;
-			SpecularLightValue[2] = 1.0f;
+			currentSpecular[0] = 1.0f;
+			currentSpecular[1] = 0.5f + greenOffset;
+			currentSpecular[2] = 1.0f;
 		}
 
-		glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
 
-		std::cout << "Increase specular light, (current diffuse light: " << SpecularLightValue[0] << ", " << SpecularLightValue[1] << ", " << SpecularLightValue[2] << ")" << std::endl;
+		std::cout << "Increase specular light, (current diffuse light: " << currentSpecular[0] << ", " << currentSpecular[1] << ", " << currentSpecular[2] << ")" << std::endl;
 
 		break;
 
 	case '7':
-		if (SpecularLightValue[1] <= 0.0f)
+		if (currentSpecular[1] <= 0.0f)
 		{
 			std::cout << "Current specular light is minimum" << std::endl;
 			break;
 		}
 
-		SpecularLightValue[0] -= 0.1f;
-		SpecularLightValue[1] -= 0.1f;
-		SpecularLightValue[2] -= 0.1f;
+		currentSpecular[0] -= 0.1f;
+		currentSpecular[1] -= 0.1f;
+		currentSpecular[2] -= 0.1f;
 
-		if (SpecularLightValue[1] < 0.01f)
+		if (currentSpecular[1] < 0.01f)
 		{
-			SpecularLightValue[0] = 0.2f;
-			SpecularLightValue[1] = 0.0f;
-			SpecularLightValue[2] = 0.2f;
+			currentSpecular[0] = 0.5f - greenOffset;
+			currentSpecular[1] = 0.0f;
+			currentSpecular[2] = 0.5f - greenOffset;
 		}
+		//glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
+		//glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
 
-		glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
-		glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
-
-		std::cout << "Decrease specular light, (current diffuse light: " << SpecularLightValue[0] << ", " << SpecularLightValue[1] << ", " << SpecularLightValue[2] << ")" << std::endl;
+		std::cout << "Decrease specular light, (current diffuse light: " << currentSpecular[0] << ", " << currentSpecular[1] << ", " << currentSpecular[2] << ")" << std::endl;
 
 		break;
 
@@ -254,6 +258,9 @@ void keyboard(unsigned char key, int x, int y)
 
 	case '-':
 		currentAlpha -= 0.1f;
+
+		if (currentAlpha < 0) currentAlpha = 0.0f;
+
 		std::cout << "Alpha: " << currentAlpha << std::endl;
 		break;
 
@@ -287,61 +294,71 @@ void keyboard(unsigned char key, int x, int y)
 
 void processMouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	if (state == GLUT_DOWN)
 	{
-		if (isLeftClicked == false)
+		if (button == GLUT_LEFT_BUTTON)
 		{
-			mouseDownPosition[0] = x;
-			mouseDownPosition[1] = y;
+			if (isLeftClicked == false)
+			{
+				mouseDownPosition[0] = x;
+				mouseDownPosition[1] = y;
 
-			tempModelRotation[0] = modelRotation[0];
-			tempModelRotation[1] = modelRotation[1];
+				tempModelRotation[0] = modelRotation[0];
+				tempModelRotation[1] = modelRotation[1];
 
-			isLeftClicked = true;
+				isLeftClicked = true;
+			}
+		}
+
+		else if (button == GLUT_RIGHT_BUTTON)
+		{
+			if (isRightClicked == false)
+			{
+				mouseDownPosition[0] = x;
+				mouseDownPosition[1] = y;
+
+				tempCameraPosition[0] = cameraPos[0];
+				tempCameraPosition[1] = cameraPos[1];
+				tempCameraPosition[2] = cameraPos[2];
+
+				tempScale[0] = scale[0];
+				tempScale[1] = scale[1];
+				tempScale[2] = scale[2];
+
+				isRightClicked = true;
+			}
+		}
+
+		else if (button == GLUT_MIDDLE_BUTTON)
+		{
+			if (isMiddleClicked == false)
+			{
+				mouseDownPosition[0] = x;
+				mouseDownPosition[1] = y;
+
+				tempModelPosition[0] = modelPosition[0];
+				tempModelPosition[1] = modelPosition[1];
+
+				isMiddleClicked = true;
+			}
 		}
 	}
-	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+	else if (state == GLUT_UP)
 	{
-		isLeftClicked = false;
-	}
-	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-	{
-		if (isRightClicked == false)
+		if (button == GLUT_LEFT_BUTTON)
 		{
-			mouseDownPosition[0] = x;
-			mouseDownPosition[1] = y;
-
-			tempCameraPosition[0] = cameraPos[0];
-			tempCameraPosition[1] = cameraPos[1];
-			tempCameraPosition[2] = cameraPos[2];
-
-			tempScale[0] = scale[0];
-			tempScale[1] = scale[1];
-			tempScale[2] = scale[2];
-
-			isRightClicked = true;
+			isLeftClicked = false;
 		}
-	}
-	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
-	{
-		isRightClicked = false;
-	}
-	else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
-	{
-		if (isMiddleClicked == false)
+
+		else if (button == GLUT_RIGHT_BUTTON)
 		{
-			mouseDownPosition[0] = x;
-			mouseDownPosition[1] = y;
-
-			tempModelPosition[0] = modelPosition[0];
-			tempModelPosition[1] = modelPosition[1];
-
-			isMiddleClicked = true;
+			isRightClicked = false;
 		}
-	}
-	else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_UP)
-	{
-		isMiddleClicked = false;
+
+		else if (button == GLUT_MIDDLE_BUTTON)
+		{
+			isMiddleClicked = false;
+		}
 	}
 }
 
@@ -405,6 +422,15 @@ void renderScene(void)
 	float alpha = glGetUniformLocation(p, "alpha");
 	glUniform1f(alpha, currentAlpha);
 
+	float ambient = glGetUniformLocation(p, "ambient");
+	glUniform4f(ambient, currentAmbient[0], currentAmbient[1], currentAmbient[2], currentAmbient[3]);
+
+	float diffuse = glGetUniformLocation(p, "diffuse");
+	glUniform4f(diffuse, currentDiffuse[0], currentDiffuse[1], currentDiffuse[2], currentDiffuse[3]);
+
+	float specular = glGetUniformLocation(p, "specular");
+	glUniform4f(specular, currentSpecular[0], currentSpecular[1], currentSpecular[2], currentSpecular[3]);
+
 	// Draw something here!
 	glBindVertexArray(mesh.VAO);
 	glDrawElements(GL_TRIANGLES, mesh.numFaces * 3, GL_UNSIGNED_INT, 0);
@@ -446,14 +472,14 @@ int main(int argc, char** argv)
     glClearColor(1.0,1.0,1.0,1.0);
 
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
-	glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
 	glLightfv(GL_LIGHT0, GL_POSITION, lpos[0]);
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
-	glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, AmbientLightValue); //Ambient 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, DiffuseLightValue); //Diffuse 조명의 성질을 설정한다.
+	//glLightfv(GL_LIGHT1, GL_SPECULAR, SpecularLightValue); //Specular 조명의 성질을 설정한다.
 	glLightfv(GL_LIGHT1, GL_POSITION, lpos[1]);
 
 	glewInit();
@@ -468,7 +494,7 @@ int main(int argc, char** argv)
 	p = createGLSLProgram( "../phong.vert", NULL, "../phong.frag" ); // Phong
 	glUseProgram(p);
 
-	mesh.CreateMesh("dragon-full.off");
+	mesh.CreateMesh("bunny.off");
 
 	//CreateTriangle();
 

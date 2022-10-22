@@ -7,6 +7,9 @@ in vec4 p;
 in float dist0;
 in float dist1;
 in float specAlpha;
+in vec4 k_a;
+in vec4 k_d;
+in vec4 k_s;
 
 void main() {
 	vec3 v = normalize(-p.xyz);
@@ -24,21 +27,21 @@ void main() {
 		gl_LightSource[1].linearAttenuation * dist1 +
 		gl_LightSource[1].quadraticAttenuation * dist1 * dist1);
 	
-	vec4 loc_ambient = gl_LightSource[0].ambient * gl_FrontMaterial.ambient + gl_LightSource[1].ambient * gl_FrontMaterial.ambient;
+	vec4 loc_ambient = gl_LightSource[0].ambient * k_a + gl_LightSource[1].ambient * k_a;
 
-	vec4 glb_ambient = gl_LightModel.ambient * gl_FrontMaterial.ambient;
+	vec4 glb_ambient = gl_LightModel.ambient * k_a;
 
-	vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
-	vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
+	vec4 diffuse0 = k_d * gl_LightSource[0].diffuse;
+	vec4 diffuse1 = k_d * gl_LightSource[1].diffuse;
 
-	vec4 specular0 = gl_LightSource[0].specular;
-	vec4 specular1 = gl_LightSource[1].specular;
+	vec4 specular0 = gl_LightSource[0].specular * k_s;
+	vec4 specular1 = gl_LightSource[1].specular * k_s;
 	
 	gl_FragColor = glb_ambient + loc_ambient + 
 
 			att0*(max(dot(l0,n),0)*diffuse0 + 
 			att1*(max(dot(l1,n),0)*diffuse1 + 
 			
-			att0 * pow(max(dot(r0,v),0.0), specAlpha) * specular0) +
-			att1 * pow(max(dot(r1,v),0.0), specAlpha) * specular1);
+			att0 * pow(max(dot(r0,v),0.0), 0.01 + specAlpha) * specular0) +
+			att1 * pow(max(dot(r1,v),0.0), 0.01 + specAlpha) * specular1);
 }

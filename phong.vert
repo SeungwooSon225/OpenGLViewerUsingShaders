@@ -12,8 +12,14 @@ out vec4 p;
 out float dist0;
 out float dist1;
 out float specAlpha;
+out vec4 k_a;
+out vec4 k_d;
+out vec4 k_s;
 
 uniform float alpha;
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
 
 void main(void)
 {
@@ -24,6 +30,9 @@ void main(void)
 	p =	gl_ModelViewProjectionMatrix * vec4(aPos, 1);
 
 	specAlpha = alpha;
+	k_a = ambient;
+	k_d = diffuse;
+	k_s = specular;
 
 	dist0 = length((gl_LightSource[0].position - p).xyz);
 	dist1 = length((gl_LightSource[1].position - p).xyz);
