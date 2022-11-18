@@ -27,7 +27,8 @@ void main() {
 		gl_LightSource[1].linearAttenuation * dist1 +
 		gl_LightSource[1].quadraticAttenuation * dist1 * dist1);
 	
-	vec4 loc_ambient = gl_LightSource[0].ambient * k_a + gl_LightSource[1].ambient * k_a;
+	vec4 loc_ambient0 = gl_LightSource[0].ambient * k_a;
+	vec4 loc_ambient1 = gl_LightSource[1].ambient * k_a;
 
 	vec4 glb_ambient = gl_LightModel.ambient * k_a;
 
@@ -36,12 +37,19 @@ void main() {
 
 	vec4 specular0 = gl_LightSource[0].specular * k_s;
 	vec4 specular1 = gl_LightSource[1].specular * k_s;
-	
-	gl_FragColor = glb_ambient + loc_ambient + 
+
+	vec4 phong0 = glb_ambient + loc_ambient0 + 
 
 			att0*(max(dot(l0,n),0)*diffuse0 + 
+			
+			att0 * pow(max(dot(r0,v),0.0), 0.01 + specAlpha) * specular0);
+
+	
+	vec4 phong1 = glb_ambient + loc_ambient1 + 
+
 			att1*(max(dot(l1,n),0)*diffuse1 + 
 			
-			att0 * pow(max(dot(r0,v),0.0), 0.01 + specAlpha) * specular0) +
 			att1 * pow(max(dot(r1,v),0.0), 0.01 + specAlpha) * specular1);
+	
+	gl_FragColor = phong0 + phong1;
 }

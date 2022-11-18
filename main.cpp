@@ -20,6 +20,8 @@
 #include "Mesh.h"
 #include <GL/freeglut.h>
 
+#define PI 3.141592
+
 
 // Shader programs
 GLuint p;
@@ -362,6 +364,7 @@ void processMouse(int button, int state, int x, int y)
 	}
 }
 
+
 void processDragMouse(int x, int y)
 {
 	float mouseMoveX = (mouseDownPosition[0] - x);
@@ -376,6 +379,12 @@ void processDragMouse(int x, int y)
 	{
 		modelRotation[0] = tempModelRotation[0] - mouseMoveX / 10.0f;
 		modelRotation[1] = tempModelRotation[1] - mouseMoveY / 10.0f;
+
+		
+		modelRotation[0] -= 360.0f * (int(modelRotation[0]) / 360);
+		modelRotation[1] -= 360.0f * (int(modelRotation[1]) / 360);
+
+		std::cout << 1.0f * cos(modelRotation[0] * PI / 180) << " " << modelRotation[0] << std::endl;
 	}
 	else if (isRightClicked)	// zoom camera
 	{
@@ -404,9 +413,11 @@ void renderScene(void)
 		cameraFront[0], cameraFront[1], cameraFront[2],
 		0.0f, 1.0f, 0.0f);
 
+
 	glTranslatef(modelPosition[0], modelPosition[1], 0.0f);
+
 	glRotatef(modelRotation[0], 0.0f, 1.0f, 0.0f);
-	glRotatef(modelRotation[1], 1.0f, 0.0f, 0.0f);
+	glRotatef(modelRotation[1], 1.0f * cos(modelRotation[0] * PI / 180), 0.0f, 1.0f * sin(modelRotation[0] * PI / 180));
 
 	if (isPerspective)
 	{
@@ -439,6 +450,7 @@ void renderScene(void)
 
     glutSwapBuffers();
 }
+
 
 void idle()
 {
